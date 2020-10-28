@@ -114,12 +114,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'swk',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': 'swkuser',
+        'PASSWORD': 'swkpass',
         'HOST': 'localhost',
         'PORT': '',
     }
 }
+
 
 
 # Password validation
