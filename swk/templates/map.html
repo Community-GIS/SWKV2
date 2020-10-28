@@ -1,0 +1,821 @@
+{% extends 'mapbase.html' %}
+{% load static%}
+{% block content %}
+<!-- import psycopg2 -->
+<style>
+
+.border {
+    padding: 6px 8px;
+    border-style: groove;
+    border-radius: 5px;
+    margin:20px;
+}
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
+
+/* .table{
+  border-collapse: collapse;
+  padding: 50px;
+  font-weight: bold;
+
+  
+  /* background:rgba(191, 149, 233, 0.473); */
+
+/* } */ */
+table, th, td 
+    {
+        border-bottom: 1px solid #ddd;
+        border-collapse: collapse;
+        padding: 2px 3px;
+        text-align: center;
+    }
+    th {
+        font-weight:bold;
+    }
+
+    .legend {
+    line-height: 18px;
+    color: #555;
+}
+.legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+/* css to customize Leaflet default styles  */
+.leaflet-popup-content-wrapper {
+    background: rgba(0, 0, 0, 0.9);
+    color: #ffffff;
+}
+
+.leaflet-popup-content{
+    font-weight: bold;
+}
+/* css for table tbinfo*/
+#tbinfo {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  font-weight: bolder;
+}
+
+#tbinfo td, #tbinfo th {
+  border: 3px solid #ddd;
+  padding: 8px;
+}
+
+#tbinfo tr:nth-child(even){background-color: #f2f2f2;}
+
+#tbinfo tr:hover {background-color: rgb(194, 92, 92);}
+
+#tbinfo th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+#checkboxes {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes label {
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
+
+#checkboxes2 {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes2 label {
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
+
+#checkboxes3 {
+  display: none;
+  /* border: 1px #dadada solid; */
+}
+
+#checkboxes3 label {
+  display: block;
+  text-align: left;
+  margin: 10px;
+}
+
+/* Popup container - can be anything you want */
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  left: 50%;
+  margin-right: -5px;
+  border-width: 5px;
+}
+
+/* The actual popup */
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+/* Popup arrow */
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/* Toggle this class - hide and show the popup */
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+/* Add animation (fade in the popup) */
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
+.form-control {
+  width: 160px;
+}
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block title %}<title>Local Library - Maharashtra Schools</title>{% endblock %}
+</head>
+<body>
+  {% block sidebar %}<!-- insert default navigation text for every page -->{% endblock %}
+
+  <!-- <h1>Maharashtra School Home Page</h1>
+  
+  <p>Welcome to School Home Page, a website developed at IIT, Mumbai</p>
+  <h2>Dynamic content</h2>
+  <p>Maharashtra has the following record(school) counts:</p>
+  <ul> -->
+
+  
+    <div id="side-bar" style="background-color: rgba(0, 0, 0, 0.2);">                <!-- side-bar container -->
+
+      <h3 class="text-center">Maharashtra School GIS</h3>
+      <div>
+     <form method="post">
+      {% csrf_token %}
+      <div class="tooltips" title="Please select the District">
+        <strong>District : </strong>{{ dist_name }}
+        <select class='form-control' id="district" name = "dist_select" onchange="form.submit();">
+        <!-- <select class='form-control' id="district" name = "dist_select"> -->
+  
+          <option value="">{{ None }}</option>
+          {% for dist_select in dname %} 
+          <option value = "{{ dist_select.distname }}"
+                  {% if district_selected == dist_select.distname %}
+                      selected="selected"
+                      subdist_select = "None"
+                      village_select = "None"
+                      school_select = "None"
+                      villagecode_select = "None"
+                      schoolcode_select = "None"
+                  {% endif %}
+          >{{ dist_select.distname }}</option>
+            {% endfor %}
+        </select>
+        
+        </div>
+        <br><br>
+  
+    <div class = "tooltips>">
+      <input type="radio" id="sing_query" name="query" value="sing_query">
+      <label for="sing_query"><strong> School related Queries : </strong></label>
+      <!-- <div class="tooltips" title="">  -->
+      <select class='form-control' id="select_groups" name = "select1">
+        <option value = "cat" id = "cat"> School Category</option>
+        <option value = "type" id = "type">School Type</option>
+        <option value = "mgnt" id = "mgnt">School Management</option>
+      </select>
+      <!-- </div> -->
+      <!-- <br> -->
+      <!-- <div class="tooltips" title=""> -->
+        <strong>Options Available </strong>
+        <select class='form-control' id="select_sub_groups" name = "select2">
+        <option data-group='SHOW' value='0'>-- Select --</option>
+        <option data-group='cat' label = 'Primary Schools ' value='1'>Primary only(1-5)</option>
+        <option data-group='cat' value='2'>Primary with Upper Primary(1-8)</option>
+        <option data-group='cat' value='3'>Primary with upper primary and secondary and higher secondary(1-12)</option>
+        <option data-group='cat' value='4'>Upper Primary only (6-8)</option>
+        <option data-group='cat' value='5'>Upper Primary with secondary and higher secondary(6-12)</option>
+        <option data-group='cat' value='6'>Upper Primary with secondary(6-10)</option>
+        <option data-group='cat' value='7'>Secondary only(9 & 10)</option>
+        <option data-group='cat' value='8'>Secondary with Hr. Secondary(9-12)</option>
+        <option data-group='cat' value='9'>Hr.Secondary only/Jr. College(11 & 12)</option>
+
+        <option data-group='type' value='1'>Boys</option>
+        <option data-group='type' value='2'>Girls</option>
+        <option data-group='type' value='3'>Co-Education</option>
+    
+        <option data-group='mgnt' value='1' label = 'DoE'>Department of Education </option>
+        <option data-group='mgnt' value='2'>Tribal/Social Welfare Department</option>
+        <option data-group='mgnt' value='3'>Local body</option>
+        <option data-group='mgnt' value='4'>Pvt. Aided</option>
+        <option data-group='mgnt' value='5'> Pvt. Unaided</option>
+        <option data-group='mgnt' value='6'>others</option>
+        <option data-group='mgnt' value='7'>central_govt</option>
+        <option data-group='mgnt' value='8'>Unrecognised</option>
+        <option data-group='mgnt' value='9'>Madarsa recognized (by Wakf board/Madarsa Board)</option>
+        <option data-group='mgnt' value='10'> Madarsa unrecognized</option>
+      <select>
+      </div>
+    
+    <br><br>
+
+    <div class = "tooltips>">
+      <input type="radio" id="sing_query1" name="query" value="sing_query1">
+      <label for="sing_query"><strong> School Facilities related Queries : </strong></label>
+      <!-- <div class="tooltips" title="">  -->
+        <select class='form-control' id="gender" name ="gender" width = "160px">--Select--
+          <option id = "popu" >Female Population</option>
+        </select>
+        <select id="symbol" name ="symbol" width = "10px">Select operation
+          <option id = "lessthan" > Less than </option>
+          <option id = "greaterthan">More Than </option>
+        </select>
+  
+        <select class='form-control' id="total_female" name ="total_female"> --Select--
+          <option id = "total_female_500" >500</option>
+          <option id = "total_female_1000">1000</option>
+          <option id = "total_female_2000">2000</option>
+          <option id = "total_female_3000">3000</option>
+          <!-- <option id = "total_female_more">More than 3000</option>    -->
+       </select>
+       
+
+      <br><br>
+    
+      <input type="radio" id="mult_query" name="query" value="mult_query">
+      <!-- <label for="mult_query"> <strong>Multilayer Query</strong></label> -->
+   
+    <!-- <select class='form-control' id="subdistrict" name ="subdist_select" onchange="form.submit();"> -->
+     <!-- <div class ="inner_div">
+      <b>Girls Toilets Availability based on </b><br> 
+      <input type="checkbox" id="gtcheck1" name="gtquery" value="gtcheck1"> -->
+      <!-- <select class='form-control' id="gender" name ="gender" width = "160px">--Select--
+        <option id = "popu" >Female Population</option>
+      </select>
+      <select id="symbol" name ="symbol" width = "10px">Select operation
+        <option id = "lessthan" > '<'</option>
+        <option id = "greaterthan">'>'</option>
+      </select>
+
+      <select class='form-control' id="total_female" name ="total_female"> --Select--
+        <option id = "total_female_500" >500</option>
+        <option id = "total_female_1000">1000</option>
+        <option id = "total_female_2000">2000</option>
+        <option id = "total_female_3000">3000</option>
+        <option id = "total_female_more">More than 3000</option>   
+     </select> -->
+     <!-- <input type="checkbox" id="gtcheck2" name="gtquery" value="gtcheck2"> -->
+     <b>Student Density (per 1000)</b>
+    </div>
+    </div>
+        
+    
+    <br><br>  
+    <div class="tooltips" title="Please select the SubDistrict">
+      <strong>Sub District : </strong>
+      <!-- <select class='form-control' id="subdistrict" name ="subdist_select" onchange="form.submit();"> -->
+        <select class='form-control' id="subdistrict" name ="subdist_select">
+        <option value="">{{ None }}</option>
+        {% for subdist_select in bname %}
+        <option value="{{ subdist_select.block_name }}"
+                {% if subdistrict_selected == subdist_select.block_name %}
+                    selected="selected"
+                    village_select = "None"
+                    villagecode_select = "None"
+                    school_select = "None"
+                    schoolcode_select = "None"
+                {% endif %}
+         > {{ subdist_select.block_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+</form>
+<script>
+
+// *****************
+  // let listState = {'Maharashtra':['Maharashtra',19.7515,75.7139]}
+  let listDistrict = {
+        Akola: ["Akola", 20.7002, 77.0082],
+        Amravati: ["Amravati", 20.9374, 77.7796],
+        Buldhana: ["Buldhana", 20.4561, 76.3637],
+        Yavatmal: ["Yavatmal", 20.3888, 78.1204],
+        Washim: ["Washim", 20.139, 77.1025],
+        Aurangabad: ["Aurangabad", 19.8762, 75.3433],
+        Beed: ["Beed", 18.9891, 75.7601],
+        Jalna: ["Jalna", 19.8297, 75.88],
+        Osmanabad: ["Osmanabad", 18.207, 76.1784],
+        Nanded: ["Nanded", 19.1383, 77.321],
+        Latur: ["Latur", 18.4088, 76.5604],
+        Parbhani: ["Parbhani", 19.2644, 76.6413],
+        Hingoli: ["Hingoli", 19.5781, 77.1025],
+        Thane: ["Thane", 19.2183, 72.9781],
+        Palghar: ["Palghar", 19.6936, 72.7655],
+        Raigad: ["Raigad", 18.5158, 73.1822],
+        Ratnagiri: ["Ratnagiri", 16.9902, 73.312],
+        Sindhudurg: ["Sindhudurg", 16.3492, 73.5594],
+        Bhandara: ["Bhandara", 21.0736, 79.8297],
+        Gadchiroli: ["Gadchiroli", 19.4969, 80.2767],
+        Chandrapur: ["Chandrapur", 19.9615, 79.2961],
+        Gondia: ["Gondia", 21.4624, 80.221],
+        Nagpur: ["Nagpur", 21.1458, 79.0882],
+        Wardha: ["Wardha", 20.7453, 78.6022],
+        Ahmednagar: ["Ahmednagar", 19.0948, 74.748],
+        Dhule: ["Dhule", 20.9042, 74.7749],
+        Jalgaon: ["Jalgaon", 21.0077, 75.5626],
+        Nandurbar: ["Nandurbar", 21.7469, 74.124],
+        Nashik: ["Nashik", 19.9975, 73.7898],
+        Kolhapur: ["Kolhapur", 16.705, 74.2433],
+        Pune: ["Pune", 18.5204, 73.8567],
+        Sangli: ["Sangli", 16.8524, 74.5815],
+        Satara: ["Satara", 17.6805, 74.0183],
+        Solapur: ["Solapur", 17.6599, 74.9064],
+        }
+
+ 
+  
+  const domain = ['https://makerghat.urbansciences.in/','http://localhost/'];
+   
+    var aspiD = document.getElementById('district').value; 
+    var distLayerLatLong= listDistrict[aspiD];
+    //  alert(distLayerLatLong);
+    var lat = distLayerLatLong[1];
+    var long = distLayerLatLong[2];
+
+    var pointLayerList = [];
+    var distLayerList = [];
+    // $('#district').on('change',function(){
+    //   var dist = document.getElementById('district').value;
+    //   var layers = 'geonode:maha_taluka_20may2020';
+    //   var wms_layer = L.tileLayer.wms('https://makerghat.urbansciences.in/geoserver/wms', {
+    //                                     layers: layers,
+    //                                     format: 'image/png',
+    //                                     transparent: 'true',
+    //                                     // version: '1.3.0',
+    //                                     cql_filter: "distname='" + distLayerLatLong[0] + "'",
+    //                                     style: ""
+    //                                 });
+    //   wms_layer.addTo(mymap);
+    //   distLayerList.push(wms_layer);
+    // }
+    // );
+
+    $('#subdistrict').on('change',function(){
+     
+      var rootUrl = domain[0] + 'geoserver/geonode/ows';
+      var items_value;
+      var cqlfil;
+       
+      var blkcd = document.getElementById('subdistrict').value;
+      // var items_value = document.getElementById('select_sub_groups').value;
+      var dropdown_row1 = document.getElementById('select_groups').value;
+      var filter = document.getElementById('select_sub_groups').label;
+      var radio_selected1 = document.getElementById('sing_query').value;
+      var radio_selected3 = document.getElementById('sing_query1').value;
+      var radio_selected2 = document.getElementById('mult_query').value;
+      // var checkbox_selected1 = document.getElementById('gtcheck1').value;
+      // var checkbox_selected2 = document.getElementById('gtcheck2').value;
+      
+      
+      var geojsonMarkerOptions = {
+        radius: 10,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      };
+      var geojsonMarkerOptions1 = {
+        radius: 10,
+        fillColor: "#0000ff",
+        color: "#050",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+	    };
+
+
+        // alert(checkbox_selected2);
+      if (document.getElementById('sing_query').checked) {
+        var radio_selected = radio_selected1;
+        var items_value = document.getElementById('select_sub_groups').value;
+      }
+      if (document.getElementById('mult_query').checked ){
+        var radio_selected = radio_selected2;
+      }
+      if (document.getElementById('sing_query1').checked ){
+        var radio_selected = radio_selected3;
+      }
+      // if (document.getElementById('checkbox_selected1').checked == true){
+      //   var checbox_selected = checkbox_selected1;
+      // }
+      
+    // alert(radio_selected);
+      if(radio_selected == 'sing_query'){
+        if (dropdown_row1 == 'cat')
+          cqlfil = 'schcat';
+        if (dropdown_row1 == 'type')
+          cqlfil = 'schtype';
+        if(dropdown_row1 == 'mgnt')
+          cqlfil = 'schmgt';
+    
+          // legend1.addTo(mymap);
+       var defaultParameters = {
+        service: 'WFS',
+        version: '1.0.0',
+        request: 'GetFeature',
+        outputFormat: 'application/json',
+        // typeName: 'geonode:school_general_code_view',
+        typeName: 'geonode:School_general_view',
+        cql_filter: `${cqlfil}='${items_value}' AND block_name='${blkcd}'`,
+        // cql_filter: `${cqlfilquery}`,
+        propertyName: 'the_geom,distname,schcd,schcat,schtype,schmgt,block_name',
+        };
+        let parameters = L.Util.extend(defaultParameters);
+          layer_url = rootUrl + L.Util.getParamString(parameters);
+          console.log(layer_url);
+          
+            fetch(layer_url)
+            .then(function (response) {
+            console.log(response.status);
+                if (response.status !== 200) {
+                  console.log('Looks like there was a problem. Status Code: ' +
+                  response.status);
+                return;
+                }
+
+              response.json().then(function(geojsonData) {
+                // console.log(geojsonData.features);
+                  console.log(geojsonData.features.length);
+                  if(geojsonData.features.length !== 0){
+                    mymap.setView([lat, long], 11);
+                        geojson = L.geoJson(geojsonData.features, {   
+                          pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, geojsonMarkerOptions);
+                           },onEachFeature:onEachFeature,
+                        }).addTo(mymap);
+                        mymap.removeControl(legend);
+                       
+                    pointLayerList.push(geojson);
+                  }
+                else
+                  alert("Zero results found satisfying your Query.")
+                  // console.log('zero Features found for this Block.');
+              });
+            }).catch(function(err) {
+              console.log('Fetch Error :-S', err);
+            });
+
+      }
+
+      //  For sing_ query1
+      // if(radio_selected == 'mult_query' && checkbox_selected1 == 'gtcheck1')
+      if(radio_selected == 'sing_query1'){
+      
+        // alert('in chekc box 1');
+        cqlfil = 'tot_f';
+        var items_value = document.getElementById('total_female').value;
+        // alert(items_value);
+        var defaultParameters = {
+            service: 'WFS',
+            version: '1.0.0',
+            request: 'GetFeature',
+            outputFormat: 'application/json',
+            // typeName: 'geonode:multi_tb_ddw_schoolcd_schoolfacilty',
+            typeName: 'geonode:multilayer_finaltest',
+            cql_filter: `${cqlfil} <${items_value} AND block_name='${blkcd}' AND distname = '${aspiD}'`,
+            propertyName: 'the_geom,distname,block_name,block_code,schcd,village_co,village_na,school_nam,toilet_g,tot_f',
+        };
+
+          let parameters = L.Util.extend(defaultParameters);
+          layer_url = rootUrl + L.Util.getParamString(parameters);
+          console.log(layer_url);
+          
+            fetch(layer_url)
+            .then(function (response) {
+            console.log(response.status);
+                if (response.status !== 200) {
+                  console.log('Looks like there was a problem. Status Code: ' +
+                  response.status);
+                return;
+                }
+
+              response.json().then(function(geojsonData) {
+                // console.log(geojsonData.features);
+                  console.log(geojsonData.features.length);
+                  if(geojsonData.features.length !== 0){
+                        mymap.setView([lat, long], 11);
+                        geojson = L.geoJson(geojsonData.features, {   
+                          pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, geojsonMarkerOptions1);
+                           },onEachFeature:onEachFeatureForPoint,
+                        }).addTo(mymap);
+                        mymap.removeControl(legend);
+                    pointLayerList.push(geojson);
+                  }
+                else
+                  alert("Zero results found satisfying your Query.")
+                  // console.log('zero Features found for this Block.');
+              });
+            }).catch(function(err) {
+              console.log('Fetch Error :-S', err);
+            });
+
+        	
+      }
+    //  For multilayer query 
+      // alert(radio_selected);
+      if(radio_selected == 'mult_query')
+      {
+        // alert('incheckbox 2');
+        cqlfil = 'tot_f';
+
+        legend.addTo(mymap);
+        info.addTo(mymap);
+        // var items_value = document.getElementById('total_female').value;
+     
+        var defaultParameters = {
+            service: 'WFS',
+            version: '1.0.0',
+            request: 'GetFeature',
+            outputFormat: 'application/json',
+            typeName: 'geonode:gross_densitypopu_vs_school0',
+            // typeName: 'geonode:density_student_taluka',
+            cql_filter: `block_name='${blkcd}' AND distname = '${aspiD}'`,
+            propertyName: 'the_geom,distname,block_name,block_code,schcd,village_co,village_na,tot_p,tot_studen,density',
+        };
+
+        let parameters = L.Util.extend(defaultParameters);
+        layer_url = rootUrl + L.Util.getParamString(parameters);
+        console.log(layer_url);
+        
+        fetch(layer_url)
+        .then(function (response) {
+           console.log(response.status);
+            if (response.status !== 200) {
+              console.log('Looks like there was a problem. Status Code: ' +
+              response.status);
+            return;
+            }
+
+          response.json().then(function(geojsonData) {
+            // console.log(geojsonData.features);
+            console.log(geojsonData.features.length);
+            if(geojsonData.features.length !== 0){
+              mymap.setView([lat, long], 11);
+              geojson = L.geoJson(geojsonData.features, {
+                  style : style,
+                  onEachFeature: onEachFeatureForPoint2
+              }).addTo(mymap);
+              mymap.removeControl(legend1);
+              pointLayerList.push(geojson);
+            }
+            else
+              console.log('zero Features found for this Block.');
+          });
+        }).catch(function(err) {
+          console.log('Fetch Error :-S', err);
+        });
+
+      }
+      
+        clearpoint_layer();
+      });
+    
+
+    function onEachFeature(feature, layer){ 
+      layer.bindPopup(`<div  propertyName: distname,class = 'text-center'>
+                        <b><u>School Related Queries</u></b><br><br>
+                        District Name: ${feature.properties.distname}<br>
+                        Block Name: ${feature.properties.block_name}<br>
+                        
+                        School Code: ${feature.properties.schcd}<br>
+                        School Type: ${feature.properties.schtype}<br>
+                        School Category:${feature.properties.schcat}<br>
+                        School Management:${feature.properties.schmgt}
+                        
+                                                                        
+                        </div>`) 
+      }
+   
+
+      
+    function onEachFeatureForPoint(feature, layer){ 
+      layer.bindPopup(`<div  propertyName: distname,class = 'text-center'>
+                        <b><u>Girls toilet availabiltiy in Village</u></b><br><br>
+                        District Name: ${feature.properties.distname}<br>
+                        Block Name: ${feature.properties.block_name}<br>
+                       
+                        
+                        Village Name: ${feature.properties.village_na}<br>
+                        
+                        School Name: ${feature.properties.school_nam}<br>
+                        Female Population: ${feature.properties.tot_f}<br>
+                        Girls toilet:${feature.properties.toilet_g}
+                        
+                                                                        
+                        </div>`) 
+      }
+   
+    function onEachFeatureForPoint2(feature, layer){ 
+        layer.on({
+          mouseover: highlightFeature,
+          mouseout: resetHighlight,
+          click: zoomToFeature
+        });
+    }
+     
+    function highlightFeature(e) {
+      var layer = e.target;
+
+      layer.setStyle({
+          weight: 5,
+          color: '#666',
+          dashArray: '',
+          fillOpacity: 0.7
+          
+      });
+      info.update(layer.feature.properties);
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+          layer.bringToFront();
+      }
+    }   
+
+
+    function resetHighlight(e) {
+        geojson.resetStyle(e.target);
+        info.update();
+    }
+
+
+    function zoomToFeature(e) {
+        mymap.fitBounds(e.target.getBounds());
+    }
+
+			
+    function clearpoint_layer(){
+
+        pointLayerList.forEach(layer => mymap.removeLayer(layer));
+        
+    }
+
+    //  custom control 
+    var info = L.control({position:"bottomright"});
+
+    info.onAdd = function (mymap) {
+        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this.update();
+        return this._div;
+    };
+
+    info.update = function (props) {
+    
+            this._div.innerHTML = '<h4 class= "text-center">Student Density </h4><hr>' +  (props ?
+            "<table><tr><td>District Name</td><td><b>"+props.distname+"<b></td></tr>"+
+            "<tr><td>Taluka Name</td><td>"+props.block_name+"</td></tr>"+
+            "<tr><td>Village Name</td><td>"+props.village_na+"</td></tr>"+
+            // "<tr><td>Students in Village</td><td>"+props.tot_studen+"</td></tr>"+
+            "<tr><td>Population of Village</td><td>"+props.tot_p+"</td></tr>"+
+            "<tr><td>Student Density</td><td>"+props.density+"</tr></table>"
+            // "<tr><td>Literate: Population</td><td>"+props.p_lit+"</tr></table>"
+            : 'Please hover over the Area');
+        
+    };
+
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (mymap) {
+
+        var div = L.DomUtil.create('div', 'info legend'),
+            grades = [0, 100,500,1000],
+            labels = [];
+
+        // loop through our density intervals and generate a label with a colored square for each interval
+        div.innerHTML += "<h4>Population range</h4><hr>";
+        for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+        }
+
+        return div;
+    };
+
+    var legend1 = L.control({position: 'bottomright'});
+
+legend1.onAdd = function (mymap) {
+
+    var div = L.DomUtil.create('div', 'info legend1'),
+        grades = [0, 100,500,1000],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    div.innerHTML += "<h4>Key</h4><hr>";
+    
+        div.innerHTML +='<b>'+"School Type +'<br>'+1: Boys"+'<br>';
+        div.innerHTML +="School Type 2: Girls";
+        div.innerHTML +="School Type 3: Co-education";
+        div.innerHTML +="School Type 1: Boys";
+        div.innerHTML +="School Type 1: Boys";
+        div.innerHTML +="School Type 1: Boys";
+           
+
+    return div;
+};
+
+    function getColor(d) {
+        return d > 1000 ? '#008080' :
+               d > 500 ? '#5F9EA0' :
+               d > 100  ? '#40E0D0' :
+               d > 0  ? '#00FFFF' :
+                          '#FFEDA0';
+    }
+    function style(feature) {
+      // alert(feature.properties.density);
+        return {
+            fillColor: getColor(feature.properties.density),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    }
+
+ $(function(){
+  $('#select_groups').on('change', function(){
+     
+      var val = $(this).val();
+      var sub = $('#select_sub_groups');
+      $('option', sub).filter(function(){
+        $(this).hide();
+        if (
+            $(this).attr('data-group') === val 
+            || $(this).attr('data-group') === 'SHOW'
+          ) {
+              $(this).show();
+              
+          } else {
+              $(this).hide();
+          }
+      });
+  });
+  $('#select_groups').trigger('change');
+ });
+
+</script>
+{% endblock %}

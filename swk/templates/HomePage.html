@@ -1,0 +1,43 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+{% block extra_css%}
+<style>
+    .centered {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: aliceblue;
+    }
+
+
+.bg {
+  /* The image used */
+  background-image: url("{% static 'images/SWK_Boats_Sealink2.jpg' %}");
+
+  /* Full height */
+  height: 100%; 
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+</style>
+
+{% endblock %} 
+{% block content %}
+
+<div class="bg">
+    <div class="centered text-center">
+        <div style="font-size: 60px;"><b> Swachh Worli Koliwada </b></div><br>
+        <h4>A Project by Stree Mukti Sanghatana, sponsored by IDFC First Bank <h4>
+    </div>
+    
+</div>
+
+  
+    
+{% endblock %}

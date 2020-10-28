@@ -1,0 +1,138 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet Map</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <style>
+
+html, 
+body {
+    height: 100%;
+}
+      .info {
+        padding: 6px 8px;
+        font: 14px/16px Arial, Helvetica, sans-serif;
+        background: white;
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: none;
+        border-radius: 5px;
+      }
+      .info h4 {
+        margin: 0 0 5px;
+        color: #777;
+      }
+
+      
+
+      .leaflet-tooltip.my-labels {
+/*         background-color: transparent; */
+        background: rgba(255, 255, 255, 0.8);
+        border: transparent;
+        box-shadow: none;
+        font-size: 10px;
+        font-weight: bold;
+        opacity: .2;
+      }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet-src.js"></script>
+    <script src="{% static 'map/polygon.js'%}"></script>
+    <script src="{% static 'map/lines.js'%}"></script>
+  </head>
+  <body>
+    <div id="map" style="width: 100%; height: 100%"></div>
+    <script type="text/javascript">
+      let geojson;
+      var map = L.map('map').setView([19.0182, 72.8168], 16);
+      mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; ' + mapLink + ' Contributors',
+        maxZoom: 18,
+      }).addTo(map);
+
+      const mapStyle = (feature) => {
+        return {
+          fillColor: 'green',
+          weight: 3,
+          opacity: 1,
+          color: 'black',
+          fillOpacity: 0.2,
+        };
+      };
+
+      const laneStyle = (feature) => {
+        return {
+          weight: 2,
+          opacity: 1,
+          color: '#cc5500',
+        };
+      };
+
+      function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+          weight: 5,
+          color: '#cc5500',
+          fillOpacity: 0.7,
+        });
+        info.update(layer.feature.properties);
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+          layer.bringToFront();
+        }
+      }
+      function resetHighlight(e) {
+        lanes.resetStyle(e.target);
+        info.update();
+      }
+      function onEachFeatureMap(feature, layer) {
+        console.log(feature);
+        layer.bindTooltip(
+          `Office Name : ${feature.properties.officename}<br> Office Type: ${feature.properties.officetype}<br> Pincode:${feature.properties.pincode}`,
+          { permanent: true, direction: 'center', className: 'my-labels' }
+        );
+      }
+
+      function onEachFeature(feature, layer) {
+        layer.on({
+          mouseover: highlightFeature,
+          mouseout: resetHighlight,
+        });
+      }
+
+      worli_map = L.geoJson(worli_poly, {
+        style: mapStyle,
+        onEachFeature: onEachFeatureMap,
+      }).addTo(map);
+
+      lanes = L.geoJson(worli_line, {
+        style: laneStyle,
+        onEachFeature: onEachFeature,
+      }).addTo(map);
+
+      //custom legend
+
+      var info = L.control({position:'bottomleft'});
+
+      info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+        this.update();
+        return this._div;
+      };
+
+      // method that we will use to update the control based on feature properties passed
+      info.update = function (props) {
+        this._div.innerHTML = '<h4>Lane info</h4>' +  (props 
+          ? '<b>' + props.name + '</b><br />'
+          : 'Hover over lanes');
+      };
+
+      info.addTo(map);
+    </script>
+  </body>
+</html>

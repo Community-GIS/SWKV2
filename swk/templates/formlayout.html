@@ -1,0 +1,23 @@
+{% extends 'userLogged_base.html' %}
+{% load materializecss %}
+{% load static %}
+{% block content %}
+
+
+   <div class="px-4 py-3"> 
+    <button type="button" class="btn btn-primary btn-block" onclick="daily_form()">Daily Entry Form </button> <br>
+    <button type="button" class="btn btn-primary btn-block" onclick="kiosk_form()">Kiosk Entry Form</button> <br>
+    <button type="button" class="btn btn-primary btn-block" onclick="kobo_form()">One Time Survey Form(Kobo Tool)</button> 
+    </div>
+
+    <script>
+        function daily_form()
+        {
+             location.href = "../trackform/";
+        } 
+        function kobo_form()
+        {
+             location.href = "https://ee.humanitarianresponse.info/x/dwsYkgyQ";
+        } 
+    </script>
+{% endblock %}>
