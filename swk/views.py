@@ -24,11 +24,11 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to index page.
-                    # messages.info(request,"login sucessfully")
+                    messages.info(request,"login sucessfully. Please check navigation bar on top to fill reqired forms")
                     return render(request,"HomePage.html")
                 else:
                     # Return a 'disabled account' error message
-                    messages.info(request,"You're account is disabled")
+                    # messages.info(request,"You're account is disabled")
                     return HttpResponseRedirect("You're account is disabled.")
         else:
                 # Return an 'invalid login' error message.
@@ -48,33 +48,36 @@ def HomePage(request):
 
 def logout_request(request):
     logout(request)
-    messages.info(request, "Logged out successfully!")
+    # messages.info(request, "Logged out successfully!")
     return render(request,"HomePage.html")
 
+# def TracksheetPage(request):
+#     form = TracksheetForm(request.POST or None)
+#     if form.is_valid():
+#         form.save()
+#         messages.success(request, 'Your data is saved') 
+#     else:
+#         form = TracksheetForm()
+#         messages.success(request, 'Please check your form') 
+
+#     context = {
+#         'form':form
+#     }
+#     return render(request,'TracksheetForm.html',context)
+
+
 def TracksheetPage(request):
-    if request.method == "POST":
-            
+    if request.method == 'POST':
         form = TracksheetForm(request.POST or None)
-        print(form)
-        # for key, value in request.POST.items():
-        #     print('Key: %s' % (key) ) 
-        #     # print(f'Key: {key}') in Python >= 3.7
-        #     print('Value %s' % (value) )
         if form.is_valid():
-
             form.save()
-        # messages.info(request,"Daily Entry is saved.")
-            messages.success(request, 'Your form is  saved') 
-        return render(request,'HomePage.html')
+            messages.success(request, 'Your data is saved') 
+            return HttpResponseRedirect(request.path_info)
+        else:
+            messages.waring(request, 'Please check your form') 
     else:
-        form = TracksheetForm(request.POST or None)
-        context= {
-            'form': form,
-            'test': 'test',
-        }
-
-    return render(request,'TracksheetForm.html',context)
-
+        form = TracksheetForm()
+    return render(request,'TracksheetForm.html',{'form':form})
 
 def MapPage(request):
     return render(request,"map_fromFGIS.html")

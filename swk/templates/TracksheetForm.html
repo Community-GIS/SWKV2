@@ -3,14 +3,36 @@
 
 {% block content %}
 
+{% block extra_css %}
+<style>
 
-   <div class="container"> 
-    <h1>Data on Houses providing seggregated Waste</h1>
+.form-row{
+    margin:50px;
+}
+</style>
+{% endblock %}
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{message}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+
+    {% endfor %}
+  </ul>
+{% endif %}
+
+   <div class="container mb-5 text-center"> 
+    <h1 class='text-center mt-5'>Houses providing seggregated Waste</h1>
 
     <form method="post">
         {% csrf_token %}
-        {{ form|crispy }}
-        <button type="submit" class="btn btn-primary">Sign in</button>
+        {% crispy form %}
       </form>
     </div>
 
