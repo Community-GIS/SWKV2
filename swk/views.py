@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.template import loader
-from .forms import TracksheetForm
+from .forms import TracksheetForm, DutyEntryForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User,auth
 from django.contrib.auth import logout
@@ -24,11 +24,11 @@ def user_login(request):
                 if user.is_active:
                     login(request, user)
                     # Redirect to index page.
-                    messages.info(request,"login sucessfully. Please check navigation bar on top to fill reqired forms")
+                    # messages.info(request,"login sucessfully")
                     return render(request,"HomePage.html")
                 else:
                     # Return a 'disabled account' error message
-                    # messages.info(request,"You're account is disabled")
+                    messages.info(request,"You're account is disabled")
                     return HttpResponseRedirect("You're account is disabled.")
         else:
                 # Return an 'invalid login' error message.
@@ -41,43 +41,64 @@ def user_login(request):
         return render(request,'adminlogin.html')
 
 def formLayout(request):
-    return render(request,"formlauout.html")
+    return render(request,"formlayout.html")
 
 def HomePage(request):
         return render(request,"HomePage.html")
 
 def logout_request(request):
     logout(request)
-    # messages.info(request, "Logged out successfully!")
+    messages.info(request, "Logged out successfully!")
     return render(request,"HomePage.html")
 
-# def TracksheetPage(request):
-#     form = TracksheetForm(request.POST or None)
-#     if form.is_valid():
-#         form.save()
-#         messages.success(request, 'Your data is saved') 
-#     else:
-#         form = TracksheetForm()
-#         messages.success(request, 'Please check your form') 
+def DutyEntryPage(request):
+    if request.method == "POST":
+            
+        # num_houses = request.POST.get("")
+        form = DutyEntryForm(request.POST or None)       
+        if form.is_valid():
 
-#     context = {
-#         'form':form
-#     }
-#     return render(request,'TracksheetForm.html',context)
+            form.save()
+        
+            messages.success(request, 'Your form is  saved') 
+        return render(request,'HomePage.html')
+    else:
+        form = DutyEntryForm(request.POST or None)
+        context= {
+            'form': form,
+            'test': 'test',
+        }
+
+    return render(request,'DutyEntryForm.html',context)
 
 
 def TracksheetPage(request):
-    if request.method == 'POST':
+    if request.method == "POST":
+
+                   
         form = TracksheetForm(request.POST or None)
+        print(form)
+        
         if form.is_valid():
+
             form.save()
-            messages.success(request, 'Your data is saved') 
-            return HttpResponseRedirect(request.path_info)
-        else:
-            messages.waring(request, 'Please check your form') 
+        
+            messages.success(request, 'Your form is  saved') 
+        return render(request,'HomePage.html')
     else:
-        form = TracksheetForm()
-    return render(request,'TracksheetForm.html',{'form':form})
+        selected_region = request.POST.get("lane_name")
+        dutyentry = DutyEntry.filter(lane_name=selected_region)
+        num_houses = dutyentry.num_houses_lane
+
+        form = TracksheetForm(request.POST or None)
+        context= {
+            'form': form,
+            'num_houses':num_houses,
+            'test': 'test',
+        }
+
+    return render(request,'TracksheetForm.html',context)
+
 
 def MapPage(request):
     return render(request,"map_fromFGIS.html")
