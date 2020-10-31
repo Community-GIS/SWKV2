@@ -123,6 +123,49 @@ table, th, td
   text-align: left;
   margin: 10px;
 }
+#checkboxes7 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+    
+#checkboxes7 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
+#checkboxes2 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+    
+#checkboxes2 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
+#checkboxes5 {
+        display: none;
+        /* border: 1px #dadada solid; */
+    }
+    
+#checkboxes5 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+#checkboxes4 {
+        display: none;
+        /* border: 1px #dadada solid; */
+}
+    
+    #checkboxes4 label {
+        display: block;
+        text-align: left;
+        margin: 10px;
+}
+
 
 /* Popup container - can be anything you want */
 .popup {
@@ -197,7 +240,7 @@ table, th, td
 
   
   
-    <div id="side-bar" style="background-color: rgba(0, 0, 0, 0.2);">                <!-- side-bar container -->
+    <div id="side-bar" style="background-color:  rgba(255, 255, 255);">                <!-- side-bar container -->
         <div class="mobileShow">
 
             <div style="text-align: center">
@@ -224,9 +267,104 @@ table, th, td
                             <div class="checkbox">
                                 <label><input type="checkbox" value="{lanes}" onchange="getBoundaryru(this)"><span> Worli Koliwada Lanes</span></label>
                             </div>
+                            <div class="checkbox">
+                              <label><input type="checkbox" value="{corbound}" onchange="getBoundaryru(this)"><span> Corporate Boundary(coming up soon...)</span></label>
+                            </div>
                            
                         </div>
                     </div>
+                    
+                    <br>
+                      
+                    <div class="multiselect">
+                      <div class="selectBox" onclick="showCheckboxes7()">
+                          <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> Zonal Geometry</button>
+                          <div class="overSelect"></div>
+                      </div>
+                      <div id="checkboxes7">
+                          <div class="checkbox" id="boundary">
+                              <label><input type="checkbox" value="{zone1}" onchange="getBoundaryru(this)"><span> Zone 1(coming up soon...)</span></label>
+                          </div>
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{zone2}" onchange="getBoundaryru(this)"><span>Zone 2(coming up soon...)</span></label>
+                          </div>
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{zone3}" onchange="getBoundaryru(this)"><span> Zone 3(coming up soon...)</span></label>
+                          </div>
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{zone4}" onchange="getBoundaryru(this)"><span>Zone 4(coming up soon...)</span></label>
+                          </div>
+                         
+                      
+                      </div>
+                    </div>
+                    <br>
+                    <div class="multiselect">
+                      <div class="selectBox" onclick="showCheckboxes2()">
+                          <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; ">Kiosks Location</button>
+                          <div class="overSelect"></div>
+                      </div>
+                      <div id="checkboxes2">
+
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{green_kiosk}" onchange="getBoundarytrib(this)"><span> Green Kiosks(coming up soon...)</span></label>
+                          </div>
+                          <div class="checkbox">
+                              <label><input type="checkbox" value="{blue_kiosk}" onchange="getBoundarytrib(this)"><span> Blue Kiosks(coming up soon...)</span></label>
+                          </div>
+                          
+                      </div>
+                  </div>
+                  <br>
+                  <div class="multiselect">
+                    <div class="selectBox" onclick="showCheckboxes5()">
+                        <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> Seggregation Centres and Pits</button>
+                        <div class="overSelect"></div>
+                    </div>
+                    <div id="checkboxes5">
+
+                        <div class="checkbox" id="boundary">
+                            <label><input type="checkbox" value="{jany}" onchange="getBoundarytrib(this)"><span> Compost Pit 1(coming up soon...) </span></label>
+                        </div>
+                        <div class="checkbox" id="boundary">
+                            <label><input type="checkbox" value="{}" onchange="getBoundarytrib(this)" disabled=""><span> Compost Pit 2(coming up soon...)</span></label>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" value="{}" onchange="getBoundarytrib(this)" disabled=""><span> Seggregation Centres(coming up soon...)</span></label>
+                        </div>
+                        
+
+                    </div>
+                </div>
+                <br>
+                <div class="multiselect">
+                  <div class="selectBox" onclick="showCheckboxes4()">
+                      <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; "> Public Places & Amenities</button>
+                      <div class="overSelect"></div>
+                  </div>
+                  <div id="checkboxes4">
+                      <div class="checkbox" id="boundary">
+                          <label><input type="checkbox" value="{Gsc}" onchange="GetSelectedfac(this);buffer(this);"><span> Public Toilets(coming up soon...)</span></label>
+                      </div>
+                      <div class="checkbox">
+                          <label><input type="checkbox" value="{ASch}" onchange="GetSelectedfac(this);buffer(this);"><span> Schools(coming up soon...)</span></label>
+                      </div>
+                      <div class="checkbox">
+                          <label><input type="checkbox" value="{iti}" onchange="GetSelectedfac(this);buffer(this);"><span> Educational Institutes(coming up soon...)</span></label>
+                      </div>
+                      <div class="checkbox">
+                          <label><input type="checkbox" value="{bif}" onchange="GetSelectedfac(this);buffer(this);"><span> Terrace Garden (coming up soon...)</span></label>
+                      </div>
+                      <div class="checkbox">
+                        <label><input type="checkbox" value="{iti}" onchange="GetSelectedfac(this);buffer(this);"><span> Nutri Gardens(coming up soon...)</span></label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" value="{bif}" onchange="GetSelectedfac(this);buffer(this);"><span> Open Space (coming up soon...)</span></label>
+                    </div>
+                  </div>
+              </div>
+
+                
                 </form>
 
         
@@ -315,6 +453,52 @@ table, th, td
                 }
             }
 
+            function showCheckboxes7() {
+                var checkboxes = document.getElementById("checkboxes7");
+                
+                if (!expanded) {
+                    checkboxes7.style.display = "block";
+                    expanded = true;
+                } else {
+
+                    checkboxes7.style.display = "none";
+                    expanded = false;
+                }
+            }
+
+            function showCheckboxes2() {
+                var checkboxes = document.getElementById("checkboxes2");
+                if (!expanded) {
+                    checkboxes2.style.display = "block";
+                    expanded = true;
+                } else {
+                    checkboxes2.style.display = "none";
+                    expanded = false;
+                }
+            }
+
+            function showCheckboxes5() {
+                var checkboxes = document.getElementById("checkboxes5");
+                if (!expanded) {
+                    checkboxes5.style.display = "block";
+                    expanded = true;
+                } else {
+                    checkboxes5.style.display = "none";
+                    expanded = false;
+                }
+            }
+            
+            function showCheckboxes4() {
+                var checkboxes = document.getElementById("checkboxes4");
+                if (!expanded) {
+                    checkboxes4.style.display = "block";
+                    expanded = true;
+                } else {
+                    checkboxes4.style.display = "none";
+                    expanded = false;
+                }
+            }
+
             function getBoundaryru(obj) {
                 let boundary = obj.value;
                 if ($(obj).is(":checked")) {
@@ -322,6 +506,8 @@ table, th, td
                         putWMSru("geonode:worli_pincodes_30_25_18");
                     else if (boundary == "{lanes}")
                         putWMSru("geonode:worli_hand_drawn_update_26oct");
+                    // else if (boundary == "{corbound}")
+                    //     putWMSru("geonode:worli_hand_drawn_update_26oct");
                               
 
                 } else {
@@ -335,6 +521,26 @@ table, th, td
 
 
             }
+
+            function getBoundarytrib(obj) {
+                let boundary = obj.value;
+                if ($(obj).is(":checked")) {
+                    if (boundary == "{green_kiosk}")
+                        putWMStrib("geonode:maha_tribal_villages_and_towns", "at");
+
+                    else if (boundary == "{blue_kiosk}")
+                        putWMStrib("geonode:maha_tribal_villages_and_towns", "m");
+                    
+                } else {
+                    if (boundary == "{green_kiosk}")
+                        removeWMStrib("category='green_kiosk'");
+
+                    else if (boundary == "{blue_kiosk}")
+                        removeWMStrib("category='blue_kiosk'");
+                   
+                }
+            }
+
 
 
             function putWMSru(layer) {
