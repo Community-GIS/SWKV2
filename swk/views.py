@@ -25,6 +25,7 @@ def user_login(request):
                     login(request, user)
                     # Redirect to index page.
                     # messages.info(request,"login sucessfully")
+                    messages.info(request,"login sucessfully. Please check navigation bar on top to fill reqired forms")
                     return render(request,"HomePage.html")
                 else:
                     # Return a 'disabled account' error message
@@ -53,14 +54,12 @@ def logout_request(request):
 
 def DutyEntryPage(request):
     if request.method == "POST":
-            
+         
         # num_houses = request.POST.get("")
         form = DutyEntryForm(request.POST or None)       
         if form.is_valid():
-
             form.save()
-        
-            messages.success(request, 'Your form is  saved') 
+            messages.success(request, 'Your data is saved')
         return render(request,'HomePage.html')
     else:
         form = DutyEntryForm(request.POST or None)
@@ -74,26 +73,24 @@ def DutyEntryPage(request):
 
 def TracksheetPage(request):
     if request.method == "POST":
-
-                   
+                 
         form = TracksheetForm(request.POST or None)
-        print(form)
         
         if form.is_valid():
-
-            form.save()
-        
-            messages.success(request, 'Your form is  saved') 
-        return render(request,'HomePage.html')
+            instance = form.save(commit=False)
+            instance.rejected = ((instance.drywaste_bf +instance.wetwaste_bf) - (instance.drywaste_af + instance.wetwaste_af))
+            instance.save()
+            messages.success(request, 'Your data is saved') 
+            return HttpResponseRedirect(request.path_info)
+     
+        else:
+            messages.waring(request, 'Please check your form') 
     else:
-        selected_region = request.POST.get("lane_name")
-        dutyentry = DutyEntry.filter(lane_name=selected_region)
-        num_houses = dutyentry.num_houses_lane
-
+        
         form = TracksheetForm(request.POST or None)
         context= {
             'form': form,
-            'num_houses':num_houses,
+            
             'test': 'test',
         }
 
