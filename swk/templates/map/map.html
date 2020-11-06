@@ -300,7 +300,7 @@ table, th, td
                     </div>
                     <br>
                     <div class="multiselect">
-                      <div class="selectBox" onclick="showCheckboxes2()">
+                      <div class="selectBox" onclick="putWMSkiosk()">
                           <button type="button" class="btn btn-outline-dark" style="width: 90%;font-size:12px; ">Kiosks Location</button>
                           <div class="overSelect"></div>
                       </div>
@@ -466,6 +466,20 @@ table, th, td
                 }
             }
 
+            function putWMSkiosk() {
+                           
+                var wms_layer = L.tileLayer.wms('https://makerghat.urbansciences.in/geoserver/wms', {
+                    layers: "geonode:kiosks_3nov",
+                    format: 'image/png',
+                    opacity:0.5,
+                    
+                });
+            wms_layer.addTo(mymap);
+            mymap.setView([19.023, 72.816], 16);
+            newLayerList.push(wms_layer);
+            } 
+
+
             function showCheckboxes2() {
                 var checkboxes = document.getElementById("checkboxes2");
                 if (!expanded) {
@@ -551,7 +565,7 @@ table, th, td
                    var wms_layer = L.tileLayer.wms('https://makerghat.urbansciences.in/geoserver/wms', {
                        layers: layer,
                        format: 'image/png',
-                       opacity:0.7,
+                       opacity:0.5,
 
                        
                    });

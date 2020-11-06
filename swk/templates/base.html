@@ -51,7 +51,7 @@
                 </ul>
 
             </div>
-            {% if user.is_authenticated and user.username == 'Zaheer' %}
+            {% if user.is_authenticated and user.username == 'Zaheer'%}
 
             <div class="navbar-collapse collapse " id="navbarNavDropdown">
                 <ul class="navbar-nav mx-auto">
@@ -59,11 +59,11 @@
                         <a class="nav-link" href="{% url 'trackform' %}">Daily Entry Form </a>
                       </li>
                       <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dutyentryform'%}" >Duty Entry Form </a>
+                        <a class="nav-link" href="{% url 'dutyentryform' %}" >Duty Entry Form </a>
                       </li>
-                      <li class="nav-item">
+                      <!-- <li class="nav-item">
                           <a class="nav-link" href="/">Kiosk Entry Form </a>
-                        </li>
+                        </li> -->
                       <li class="nav-item">
                       <a class="nav-link" href="https://ee.humanitarianresponse.info/x/dwsYkgyQ">Kobo Form </a>
                       </li>

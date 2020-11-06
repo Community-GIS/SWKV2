@@ -30,6 +30,7 @@ class Tracksheet(models.Model):
     second_attendants_name = models.CharField(max_length=100)
     time_of_visit = models.CharField(max_length=100)
     track_id = models.AutoField(primary_key=True)
+    rejected = models.IntegerField()
 
     def __str__(self):
         return self.lane_name
