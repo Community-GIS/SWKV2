@@ -1,8 +1,10 @@
 from django import forms
-from .models import Tracksheet,DutyEntry,Zones
+from .models import Tracksheet,DutyEntry,Zones,Feedback
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Row, Column
+from crispy_forms.layout import Layout, Submit, Row, Column, ButtonHolder
 import datetime
+# from phonenumber_field.formfields import PhoneNumberField
+from django.contrib.gis import forms
 
             
 demarcated_lane = [('none','Select Lane'),
@@ -177,4 +179,56 @@ class DutyEntryForm(forms.ModelForm):
     class Meta:
         model = DutyEntry
         fields = '__all__'
+
+
+    # name = forms.CharField(required=True)
+    # email = forms.EmailField(required=False)
+    # mobile = PhoneNumberField(required=True)
+    
+    # point = forms.PointField(required=True, widget=
+    #     forms.OSMWidget(attrs={'map_width': 500, 'map_height': 300}))
+    # feedback = forms.CharField(
+    #     required=True,
+    #     widget=forms.Textarea
+    # )
+class FeedbackForm(forms.ModelForm):
+    # latitude = forms.CharField()
+    # longitude = forms.CharField()
+    name= forms.CharField()
+    email = forms.CharField()
+    mobile = forms.IntegerField()
+    feedback = forms.CharField(widget=forms.Textarea(attrs={"rows":5, "cols":20})
+)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            
+            Row(
+                Column('latitude', css_class='form-group col-md-5 mb-0'),
+                Column('longitude', css_class='form-group col-md-5 mb-0'),
+                css_class='form-row'
+            ),
+            
+            Row(
+                Column('name', css_class='form-group col-md-5 mb-0'),                
+                Column('email', css_class='form-group col-md-5 mb-0'),
+                Column('mobile', css_class='form-group col-md-5 mb-0'),
+                css_class='form-row'
+            ),
+             Row(
+                Column('feedback', css_class='form-group col-md-5 mb-0'),
+               
+                css_class='form-row'
+            ),
+            Submit('submit', 'Save')
+        )
+
+    class Meta:
+        model = Feedback
+        fields = '__all__'
+        exclude = ['latitude','longitude']
+
+    
+ 
  

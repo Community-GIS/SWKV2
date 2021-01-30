@@ -50,7 +50,12 @@ function ChoroplethMap({geojson,data,setSelLane,selCategory}) {
 
     let colorLegend = legendColor()
         .labelFormat(format(".2f"))
-        .title(`Legend : ${selCategory} waste`)
+        // if ((${selCategory}) ==  'dry'){
+        //     .title(`Legend : Seggregated ${selCategory} waste`)
+        // }
+        // else {
+            .title(`Legend :${selCategory} waste`)
+        // }
         .scale(colorScale);
 
     

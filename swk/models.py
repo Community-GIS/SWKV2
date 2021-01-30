@@ -1,8 +1,13 @@
 from django.db import models
 from django import forms
 from django.forms import ModelForm
-
+# from django.contrib.gis.db import models
+# from phone_field import PhoneField
 from wagtail.core.models import Page
+# from django.contrib.gis.geos import Point
+# from geoposition import Geoposition
+# from geoposition.fields import GeopositionField
+
 
 class DutyEntry(models.Model):
     lane_name = models.CharField(primary_key = True, max_length=200, blank = False)
@@ -80,3 +85,16 @@ class SwkTracksheetReport(models.Model):
         managed = False
         db_table = 'swk_tracksheet_report'
 
+class Feedback(models.Model):
+    # location = models.PointField(geography=True, default=Point(0.0, 0.0))
+    # position = GeopositionField()
+    # latitude = models.DecimalField(max_digits=11, decimal_places=8)
+    # longitude = models.DecimalField(max_digits=11, decimal_places=8)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(blank=True, null=True)
+    mobile = models.IntegerField(blank=True, null=True)
+    feedback = models.TextField(blank=False, null=False)
+
+    class Meta:
+        managed = False
+        db_table = 'swk_feedback'

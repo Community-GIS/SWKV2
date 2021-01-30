@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.template import loader
-from .forms import TracksheetForm, DutyEntryForm
+from .forms import TracksheetForm, DutyEntryForm, FeedbackForm
 from .models import DutyEntry,Tracksheet,Zones
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User,auth
@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-
+from django.core.mail import send_mail, get_connection
 
 # Create your views here.form
 
@@ -192,4 +192,57 @@ def MapPage(request):
 def AboutUs(request):
     return render(request,"aboutus.html")
 
-        
+    
+def Feedback(request):
+    # form_class = FeedbackForm
+    # return render(request,"feedback_form.html", { 'form': form_class,})
+
+    form = FeedbackForm(request.POST or None)
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST or None)
+        if form.is_valid():
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            cd = form.cleaned_data
+            name = form.cleaned_data['name']
+            mobile = form.cleaned_data['mobile']
+            feedback = form.cleaned_data['feedback']
+            print("feedabck is"+cd['feedback'])
+            print("email is"+ cd['email'])
+            from_email = form.cleaned_data['email']
+            message_mail = '"Name is " + name + "Mobile"+ mobile + feedback '
+
+            # print(latitude)
+            # print(request.POST.get('lat'))
+            print(request.POST)
+            form.save()
+            
+
+            # con = get_connection('django.core.mail.backends.console.EmailBackend')
+            con = get_connection('django.core.mail.backends.smtp.EmailBackend')
+            # if (send_mail('Feedback (SWK)', cd['feedback'],cd.get('email', 'noreply@example.com'),
+            # ['monikapatira@gmail.com'],connection=con)):
+            if(send_mail('Feedback (SWK)', cd['feedback'],from_email,['monikapatira@gmail.com'],fail_silently=False,)):
+                print("message sent")
+            else :
+                print("Failure")
+            messages.success(request, 'Your feedback is saved and email is sent.') 
+            return HttpResponseRedirect(request.path_info)
+        else:
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude','')
+            print(latitude)
+            print(longitude)
+            print(request.POST.get('lat'))
+            print(request.POST)
+            cd = form.cleaned_data
+            print(cd)
+            print(form.errors)
+            messages.warning(request, 'Please check your form') 
+            return render(request, 'feedback_form.html',{'form': FeedbackForm})
+    else: 
+        form_class = FeedbackForm
+        return render(request,"feedback_form.html", { 'form': form_class,})
+    
+def FAQ(request):
+    return render(request,"faq.html")

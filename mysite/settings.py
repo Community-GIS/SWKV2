@@ -58,7 +58,11 @@ INSTALLED_APPS = [
     'react_dashboard',
     'rest_framework',
     'corsheaders',
-
+    # 'feedback_form',
+    # 'phonenumber_field',
+    # 'phone_field',
+    # 'django.contrib.gis',
+    # 'geoposition',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -122,8 +126,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'swk',
-        'USER': 'swkuser',
-        'PASSWORD': 'swkpass',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -170,3 +174,23 @@ DATE_INPUT_FORMATS = ('%d-%m-%Y','%Y-%m-%d')
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+# GEOPOSITION_GOOGLE_MAPS_API_KEY ='AIzaSyAw8bSxtdcAgNeYt2Nk3cfVcWddJLXUx60'
+
+# GEOPOSITION_MAP_OPTIONS = {
+#     'minZoom': 3,
+#     'maxZoom': 15,
+# }
+
+# GEOPOSITION_MARKER_OPTIONS = {
+#     'cursor': 'move'
+# }
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'monikapatira@gmail.com'#sender's email-id 
+EMAIL_HOST_PASSWORD ='ttmbakgnpamkkj' #password associated with above email-id 
+

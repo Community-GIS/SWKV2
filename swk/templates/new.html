@@ -50,6 +50,7 @@
                     <li class="active"><a href="{% url 'homepage' %}">Home</a></li>
                     <li><a href="{% url 'aboutus' %}">About Us</a></li>
                     <li><a href="{% url 'swk_map' %}">Maps</a></li>
+                    <!-- <li><a href="{% url 'feedback' %}">Feedback</a></li> -->
                     <!-- <li><a href="#portfolio">Portfolio</a></li>
                     <li><a href="#team">Team</a></li> -->
                     {% if request.user|has_group:"Editor" %}
@@ -75,6 +76,7 @@
                     <li><a href="https://makerghat.urbansciences.in/layers/?limit=5&offset=0">Upload Layer</a></li>
 
                     <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'faq' %}">FAQ</a></li>
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                     {% else %}
