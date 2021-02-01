@@ -507,9 +507,6 @@ table, th, td
             }
 
             function putWMSkiosk() {
-               
-              
-                           
                 var wms_layer = L.tileLayer.wms('https://makerghat.urbansciences.in/geoserver/wms', {
                     layers: "geonode:kiosk_24nov",
                     format: 'image/png',
@@ -746,9 +743,8 @@ table, th, td
                         removeWMS("geonode:ward_193_updated_3nov");
                     else if (boundary == "{zones}")                        
                         removeWMS("geonode:zone_polygon300121");
-                    else if (boundary == "{bubbles}")    
-                        putWMSru("geonode:bubbles_2_9dec2020");   
-                 
+                    else if (boundary == "{bubble}")    
+                        removeWMS("geonode:bubbles_2_9dec2020");  
                     else if (boundary == "{spot}")                        
                         {
                             removeWMS("geonode:spots_3december");
