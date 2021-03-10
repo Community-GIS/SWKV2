@@ -109,9 +109,11 @@
         background: rgb(26, 255, 0);
     }
 </style>
+
 {% block extra_map_css%} {% endblock extra_map_css%} {% endblock extra_css%} {% block content%}
 <div id="mapdiv" class="col-md-12"></div>
 {% block map_content%} {% endblock map_content%} {% endblock content%} {% block extra_javascript %}
+
 
 <script>
     var mymap;
@@ -210,3 +212,4 @@
     ctlAttribute.addAttribution('&copy; <a href="http://www.makerghat.org">makerGHAT</a>');
 </script>
 {% block extra_map_javascript%} {% endblock extra_map_javascript%} {% endblock extra_javascript %}
+
